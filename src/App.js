@@ -10,10 +10,11 @@ export function App() {
         setLocalTitle(title)
     }, []);
 
-    const {updateTitle} = useDispatch('my-async-store')
+    const {updateTitle, persist} = useDispatch('my-async-store')
 
-    const onClick = () => {
+    const onClick = async () => {
         updateTitle(localTitle)
+        await persist()
     }
 
     return <>

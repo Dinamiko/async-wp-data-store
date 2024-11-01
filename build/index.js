@@ -30,10 +30,12 @@ function App() {
     setLocalTitle(title);
   }, []);
   const {
-    updateTitle
+    updateTitle,
+    persist
   } = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_0__.useDispatch)('my-async-store');
-  const onClick = () => {
+  const onClick = async () => {
     updateTitle(localTitle);
+    await persist();
   };
   return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.Fragment, {
     children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("input", {
@@ -71,11 +73,21 @@ const actions = {
       title
     };
   },
-  fetchFromAPI(path) {
+  fetch(path) {
     return {
-      type: 'FETCH_FROM_API',
+      type: 'FETCH',
       path
     };
+  },
+  *persist() {
+    const title = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_1__.select)('my-async-store').getTitle();
+    return yield _wordpress_api_fetch__WEBPACK_IMPORTED_MODULE_0___default()({
+      path: '/wp/v2/settings',
+      method: 'post',
+      data: {
+        title
+      }
+    });
   }
 };
 const store = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_1__.createReduxStore)('my-async-store', {
@@ -98,7 +110,7 @@ const store = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_1__.createReduxStore)(
     }
   },
   controls: {
-    FETCH_FROM_API(action) {
+    FETCH(action) {
       return _wordpress_api_fetch__WEBPACK_IMPORTED_MODULE_0___default()({
         path: action.path
       });
@@ -107,7 +119,7 @@ const store = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_1__.createReduxStore)(
   resolvers: {
     *getTitle() {
       const path = '/wp/v2/settings?_fields=title';
-      const response = yield actions.fetchFromAPI(path);
+      const response = yield actions.fetch(path);
       return actions.updateTitle(response.title);
     }
   }

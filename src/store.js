@@ -1,5 +1,5 @@
 import apiFetch from '@wordpress/api-fetch';
-import {createReduxStore, register} from '@wordpress/data';
+import {createReduxStore, register, select} from '@wordpress/data';
 
 const actions = {
     updateTitle(title) {
@@ -8,12 +8,23 @@ const actions = {
             title
         }
     },
-    fetchFromAPI(path) {
+    fetch(path) {
         return {
-            type: 'FETCH_FROM_API',
+            type: 'FETCH',
             path,
         };
     },
+    *persist() {
+        const title = select( 'my-async-store' ).getTitle();
+
+        return yield apiFetch( {
+            path: '/wp/v2/settings',
+            method: 'post',
+            data: {
+                title
+            },
+        } );
+    }
 }
 
 export const store = createReduxStore('my-async-store', {
@@ -32,15 +43,15 @@ export const store = createReduxStore('my-async-store', {
         }
     },
     controls: {
-        FETCH_FROM_API( action ) {
-            return apiFetch( { path: action.path } );
+        FETCH(action) {
+            return apiFetch({path: action.path});
         },
     },
     resolvers: {
         * getTitle() {
             const path = '/wp/v2/settings?_fields=title'
-            const response = yield actions.fetchFromAPI( path );
-            return actions.updateTitle( response.title );
+            const response = yield actions.fetch(path);
+            return actions.updateTitle(response.title);
         }
     }
 })
