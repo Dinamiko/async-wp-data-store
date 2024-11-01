@@ -58,12 +58,29 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   store: () => (/* binding */ store)
 /* harmony export */ });
-/* harmony import */ var _wordpress_data__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @wordpress/data */ "@wordpress/data");
-/* harmony import */ var _wordpress_data__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_wordpress_data__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _wordpress_api_fetch__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @wordpress/api-fetch */ "@wordpress/api-fetch");
+/* harmony import */ var _wordpress_api_fetch__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_wordpress_api_fetch__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _wordpress_data__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @wordpress/data */ "@wordpress/data");
+/* harmony import */ var _wordpress_data__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_wordpress_data__WEBPACK_IMPORTED_MODULE_1__);
 
-const store = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_0__.createReduxStore)('my-async-store', {
+
+const actions = {
+  updateTitle(title) {
+    return {
+      type: 'update_title',
+      title
+    };
+  },
+  fetchFromAPI(path) {
+    return {
+      type: 'FETCH_FROM_API',
+      path
+    };
+  }
+};
+const store = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_1__.createReduxStore)('my-async-store', {
   reducer(state = {
-    title: 'Some title'
+    title: ''
   }, action) {
     switch (action.type) {
       case 'update_title':
@@ -74,21 +91,28 @@ const store = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_0__.createReduxStore)(
     }
     return state;
   },
-  actions: {
-    updateTitle(title) {
-      return {
-        type: 'update_title',
-        title
-      };
-    }
-  },
+  actions,
   selectors: {
     getTitle(state) {
       return state.title;
     }
+  },
+  controls: {
+    FETCH_FROM_API(action) {
+      return _wordpress_api_fetch__WEBPACK_IMPORTED_MODULE_0___default()({
+        path: action.path
+      });
+    }
+  },
+  resolvers: {
+    *getTitle() {
+      const path = '/wp/v2/settings?_fields=title';
+      const response = yield actions.fetchFromAPI(path);
+      return actions.updateTitle(response.title);
+    }
   }
 });
-(0,_wordpress_data__WEBPACK_IMPORTED_MODULE_0__.register)(store);
+(0,_wordpress_data__WEBPACK_IMPORTED_MODULE_1__.register)(store);
 
 /***/ }),
 
@@ -99,6 +123,16 @@ const store = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_0__.createReduxStore)(
 /***/ ((module) => {
 
 module.exports = window["ReactJSXRuntime"];
+
+/***/ }),
+
+/***/ "@wordpress/api-fetch":
+/*!**********************************!*\
+  !*** external ["wp","apiFetch"] ***!
+  \**********************************/
+/***/ ((module) => {
+
+module.exports = window["wp"]["apiFetch"];
 
 /***/ }),
 
