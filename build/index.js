@@ -54,12 +54,32 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _wordpress_data__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @wordpress/data */ "@wordpress/data");
 /* harmony import */ var _wordpress_data__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_wordpress_data__WEBPACK_IMPORTED_MODULE_0__);
 
-const store = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_0__.createReduxStore)('counter', {
-  reducer(state, action) {
+const store = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_0__.createReduxStore)('my-async-store', {
+  reducer(state = {
+    title: 'Some title'
+  }, action) {
+    switch (action.type) {
+      case 'update_title':
+        return {
+          ...state,
+          title: action.title
+        };
+    }
     return state;
   },
-  actions: {},
-  selectors: {}
+  actions: {
+    updateTitle(title) {
+      return {
+        type: 'update_title',
+        title
+      };
+    }
+  },
+  selectors: {
+    getTitle(state) {
+      return state.title;
+    }
+  }
 });
 (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_0__.register)(store);
 
