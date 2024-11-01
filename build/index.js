@@ -24,14 +24,21 @@ __webpack_require__.r(__webpack_exports__);
 
 
 function App() {
-  const [title, setTitle] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.useState)('');
+  const [localTitle, setLocalTitle] = (0,_wordpress_element__WEBPACK_IMPORTED_MODULE_1__.useState)('');
+  (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_0__.useSelect)(select => {
+    const title = select('my-async-store').getTitle();
+    setLocalTitle(title);
+  }, []);
+  const {
+    updateTitle
+  } = (0,_wordpress_data__WEBPACK_IMPORTED_MODULE_0__.useDispatch)('my-async-store');
   const onClick = () => {
-    console.log(title);
+    updateTitle(localTitle);
   };
   return /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsxs)(react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.Fragment, {
     children: [/*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("input", {
-      value: title,
-      onChange: e => setTitle(e.target.value)
+      value: localTitle,
+      onChange: e => setLocalTitle(e.target.value)
     }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_3__.jsx)("button", {
       onClick: onClick,
       children: "Update"

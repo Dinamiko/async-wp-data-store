@@ -3,14 +3,21 @@ import { useState } from '@wordpress/element';
 import './store'
 
 export function App() {
-    const [title, setTitle] = useState('')
+    const [localTitle, setLocalTitle] = useState('')
+
+    useSelect((select) => {
+        const title = select('my-async-store').getTitle();
+        setLocalTitle(title)
+    }, []);
+
+    const {updateTitle} = useDispatch('my-async-store')
 
     const onClick = () => {
-        console.log(title)
+        updateTitle(localTitle)
     }
 
     return <>
-       <input value={title} onChange={(e) => setTitle(e.target.value)}/>
+        <input value={localTitle} onChange={(e) => setLocalTitle(e.target.value)}/>
         <button onClick={onClick}>Update</button>
     </>
 }
